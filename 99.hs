@@ -42,3 +42,55 @@ pack = foldr update []
 
 encode :: (Eq a, Integral b) => [a] -> [(b, a)]
 encode xs = map (\ys -> (myLength ys, head ys)) $ pack xs
+
+data Occurence a = Multiple Int a | Single a deriving Show
+encodeModified :: Eq a => [a] -> [Occurence a]
+encodeModified xs = map tupleToOccurence $ encode xs
+    where tupleToOccurence (1, x) = Single x
+          tupleToOccurence (n, x) = Multiple n x
+
+decodeModified :: [Occurence a] -> [a]
+decodeModified [] = []
+decodeModified (x:xs) = case x of
+    (Single y) -> y : decodeModified xs
+    (Multiple n y) -> replicate n y ++ decodeModified xs
+
+encodeDirect :: Eq a => [a] -> [Occurence a]
+encodeDirect = foldr update []
+    where update x acc = case acc of
+              [] -> [Single x]
+              (Single y) : as | x == y -> (Multiple 2 x) : as
+              (Multiple n y) : as | x == y -> (Multiple (n+1) x) : as
+              _ -> (Single x) : acc
+
+dupli :: [a] -> [a]
+dupli [] = []
+dupli (x:xs) = x : x : dupli xs
+
+repli :: [a] -> Int -> [a]
+repli [] _ = []
+repli (x:xs) n = replicate n x ++ repli xs n
+
+dropEvery :: [a] -> Int -> [a]
+dropEvery xs n = map fst $ filter (\(_, s) -> s `mod` n /= 0) $ zip xs [1 .. ]
+
+split :: [a] -> Int -> ([a], [a])
+split [] _ = error "empty list"
+split xs 0 = ([], xs)
+split (x:xs) n = (x:f, s)
+    where (f, s) = split xs (n-1)
+
+slice :: [a] -> Int -> Int -> [a]
+slice xs i j = take (j - i + 1) $ drop (i - 1) xs
+
+rotate :: [a] -> Int -> [a]
+rotate xs 0 = xs
+rotate xs n | 0 <= n && n < len = drop n xs ++ take n xs
+            | otherwise = rotate xs $ n `mod` len
+            where len = length xs
+
+removeAt :: Int -> [a] -> [a]
+removeAt _ [] = error "index out of range"
+removeAt 1 (x:xs) = xs
+removeAt n (x:xs) = x : removeAt (n - 1) xs
+
