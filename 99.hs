@@ -120,3 +120,19 @@ combinations 1 xs = map (:[]) xs
 combinations n (x:xs) = with ++ without
     where with = map (x:) $ combinations (n-1) xs
           without = combinations n xs
+
+fullWords :: Int -> String
+fullWords n = concat $ intersperse "-" $ map digitToWord $ digits n
+    where digitToWord 1 = "one"
+          digitToWord 2 = "two"
+          digitToWord 3 = "three"
+          digitToWord 4 = "four"
+          digitToWord 5 = "five"
+          digitToWord 6 = "six"
+          digitToWord 7 = "seven"
+          digitToWord 8 = "eight"
+          digitToWord 9 = "nine"
+          digitToWord 0 = "zero"
+          revDigits n | 0 <= n && n <= 9 = [n]
+          revDigits n = n `mod` 10 : revDigits (n `div` 10)
+          digits = reverse . revDigits
