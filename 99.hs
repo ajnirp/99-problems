@@ -1,6 +1,6 @@
 import Control.Applicative
 import Data.List
-import System.Random
+import System.Random hiding (split)
 
 myLast :: [a] -> a
 myLast [] = error "empty list"
@@ -101,7 +101,7 @@ insertAt x xs 1 = x : xs
 insertAt x (y:ys) n = y : insertAt x ys (n-1)
 insertAt _ [] _ = error "index out of range"
 
-range :: Int -> Int -> Int
+range :: Int -> Int -> [Int]
 range i j = [i..j]
 
 rndSelect :: [a] -> Int -> IO [a]
