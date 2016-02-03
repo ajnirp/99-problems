@@ -121,6 +121,27 @@ combinations n (x:xs) = with ++ without
     where with = map (x:) $ combinations (n-1) xs
           without = combinations n xs
 
+isPrime :: Int -> Bool
+isPrime 1 = False
+isPrime n = all (==True) $ map (\i -> n `mod` i /= 0) [2 .. n `div` 2]
+
+myGCD :: Int -> Int -> Int
+myGCD x y | x > y = myGCD y x
+myGCD x y | x < 0 = myGCD (-x) y
+myGCD x y | y < 0 = myGCD x (-y)
+myGCD 0 x = x
+myGCD 1 x = 1
+myGCD x y = myGCD (y - x) x
+
+coprime :: Int -> Int -> Bool
+coprime x y = 1 == gcd x y
+
+totient :: Int -> Int
+totient x = length $ filter (==True) $ map (coprime x) [1..x]
+
+primeFactors :: Int -> [Int]
+primeFactors 2 = [2]
+
 fullWords :: Int -> String
 fullWords n = concat $ intersperse "-" $ map digitToWord $ digits n
     where digitToWord 1 = "one"
